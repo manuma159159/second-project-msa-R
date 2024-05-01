@@ -31,6 +31,12 @@ app.get('/apply', (req, res) => {
   });
 });
 
+app.get('/apply/applyok', (req, res) => {
+  res.render('apply/applyok', {  // apply.handlebars
+    layout: false  // 기본 레이아웃을 사용하지 않도록 설정
+  });
+});
+
 app.get('/check', (req, res) => {
   res.render('check/check', {  // apply.handlebars
     layout: false  // 기본 레이아웃을 사용하지 않도록 설정
