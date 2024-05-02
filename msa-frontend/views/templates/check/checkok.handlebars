@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{> head_css}}
+    <!-- 구글 아이콘과 폰트 생략 -->
+    <title>SJ COMPANY 방문객 서비스</title>
+    <style>
+        .main_box {
+            position: relative;
+            width: 1300px;
+            background-color: white;
+        }
+        .title_text {
+            font-weight: bold;
+            font-size: 40px;
+            color: white;
+            text-shadow: 2px 4px 2px black;
+            position: absolute;
+            top: -80px;
+        }
+        .title_list {
+            {#border: 1px solid red;#}
+            height: 250px;
+            overflow-y: auto
+        }
+        .table_name {
+            margin: 0 auto;
+            font-size: 14px;
+        }
+        .table_name th {
+            padding: 5px 22px 5px 22px;
+            border: 1px solid black;
+            text-align: center;
+            text-shadow: 0 1px 1px gray;
+        }
+        .table_name_title {
+            background-color: #BDBDBD;
+            font-size: 16px;
+        }
+        .guide_text {
+            font-size: 30px;
+            font-weight: bold;
+            text-shadow: 1px 2px 1px gray;
+            text-align: center;
+            margin-top: 40px;
+        }
+        .btn_box {
+            text-align: center;
+            padding-top: 20px;
+        }
+        .btn1, .btn2 {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .recheck_text {
+            font-weight: bold;
+            font-size: 35px;
+            text-align: center;
+            text-shadow: 1px 2px 1px gray;
+            padding: 100px 0 100px 0;
+        }
+    </style>
+</head>
+<body style="background-size: cover; background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90oy1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+<div class="container">
+    {{> header}}
+    <main>
+        <form name="datafrm" id="datafrm">
+            <input type="hidden" id="phone_number" name="phone_number" value="{{ data.phone_number }}">
+            <input type="hidden" id="name" name="name" value="{{ data.name }}">
+        </form>
+
+        <div class="main_box">
+            <div class="info_box">
+                <div class="title_text">
+                    조회 정보
+                </div>
+                <div id="insert_content">
+                    {{!-- 조회 내용 --}}
+                </div>
+            </div>
+        </div>
+    </main>
+{{> footer}}
+</div>
+
+<script>
+    window.addEventListener('load', async () =>{
+
+        try {
+            const result = await getCheckResult();
+            displayCheckResultInfo(result);
+        } catch (e){
+            console.error(e);
+            alert('임직원 목록 조회 실패!!!');
+        }
+    })
+
+    async function getCheckResult() {
+        const form = document.getElementById('datafrm'); // 폼 요소 가져오기
+        const formData = new FormData(form); // 폼 데이터를 FormData 객체로 생성
+
+        try {
+            const res = await fetch('http://127.0.0.1:8000/check/checkok', {
+                method: 'POST', // HTTP 메소드 지정
+                body: formData, // 폼 데이터 전송
+                headers: {
+                    'Accept': 'application/json' // 서버 응답을 JSON으로 받기를 기대
+                }
+            });
+
+            if (res.ok) {
+                return await res.json(); // 서버로부터 JSON 응답을 기다리고 파싱
+            } else {
+                throw new Error('정보 조회 실패!!!'); // 오류 발생 시 예외 처리
+            }
+
+        } catch (error) {
+            console.error('Error:', error); // 콘솔에 오류 출력
+        }
+    }
+
+    const displayCheckResultInfo = (result) => {
+        const infoBox = document.querySelector('#insert_content');
+
+        if (result && result.length > 0) {
+            let tableHTML = `
+                <div class="title_list">
+                    <table class="table_name">
+                        <tr class="table_name_title">
+                            <th>이름</th>
+                            <th>전화번호</th>
+                            <th>이메일</th>
+                            <th>회사이름</th>
+                            <th>직급</th>
+                            <th>부서</th>
+                            <th>방문장소</th>
+                            <th>방문목적</th>
+                            <th>방문일자</th>
+                            <th>승인여부</th>
+                        </tr>`;
+
+            result.forEach(visitor => {
+                tableHTML += `
+                    <tr>
+                        <th>${visitor.name}</th>
+                        <th>${visitor.phone_number}</th>
+                        <th>${visitor.email}</th>
+                        <th>${visitor.company_name}</th>
+                        <th>${visitor.job_position}</th>
+                        <th>${visitor.department_name}</th>
+                        <th>${visitor.location}</th>
+                        <th>${visitor.purpose}</th>
+                        <th>${visitor.visit_date}</th>
+                        <th>${visitor.status}</th>
+                    </tr>`;
+            });
+
+            tableHTML += `</table></div>`;
+
+            infoBox.innerHTML = tableHTML + `
+                <div class="guide_text">
+                    신청해 주신 방문 신청은 금일 16:00에 일괄처리 예정입니다.
+                    <br>
+                    승인 거절에 대한 자세한 내용은 고객센터로 문의하여 주시기 바랍니다.
+                </div>
+                <div class="btn_box">
+                    <div class="btn1">
+                        <button type="button" class="form-control btn btn-light btn-outline-dark btn-lg theme-btn--dark-inverse sqs-button-element--dark" onClick="location.href='/'">&nbsp;홈으로&nbsp;</button>
+                    </div>
+                    <div class="btn2">
+                        <button type="button" class="form-control btn btn-light btn-outline-dark btn-lg theme-btn--dark-inverse sqs-button-element--dark" onClick="location.href='/svc'">고객센터</button>
+                    </div>
+                </div>`;
+        } else {
+            infoBox.innerHTML = `
+                <div class="recheck_text">
+                    조회된 정보가 없습니다. 다시 한 번 확인해주세요.
+                </div>
+                <div class="btn_box">
+                    <div class="btn1">
+                        <button type="button" class="form-control btn btn-light btn-outline-dark btn-lg theme-btn--dark-inverse sqs-button-element--dark" onClick="location.href='/check'">조회하기</button>
+                    </div>
+                    <div class="btn2">
+                        <button type="button" class="form-control btn btn-light btn-outline-dark btn-lg theme-btn--dark-inverse sqs-button-element--dark" onClick="location.href='/'">&nbsp;&nbsp;홈으로&nbsp;&nbsp;</button>
+                    </div>
+                </div>`;
+        }
+    }
+
+
+</script>
+
+</body>
+</html>
