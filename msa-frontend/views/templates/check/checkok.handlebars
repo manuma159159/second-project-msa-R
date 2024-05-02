@@ -87,14 +87,15 @@
 </div>
 
 <script>
-    window.addEventListener('load', async () =>{
-
+    window.addEventListener('load', async () => {
         try {
             const result = await getCheckResult();
-            displayCheckResultInfo(result);
-        } catch (e){
-            console.error(e);
-            alert('결과 조회 실패!!!');
+            if (result) {  // 결과가 성공적으로 반환되었을 경우에만 display 함수 호출
+                displayCheckResultInfo(result);
+            }
+        } catch (e) {
+            console.error(e);  // 콘솔에 오류 출력
+            alert(e.message);  // 오류 메시지로 설정된 알림 보여주기
         }
     })
 
@@ -119,6 +120,7 @@
 
         } catch (error) {
             console.error('Error:', error); // 콘솔에 오류 출력
+            throw new Error('네트워크 연결 오류로 인해 정보 조회 실패'); // 네트워크 오류에 대한 새로운 오류 메시지를 설정하고 던지기
         }
     }
 
