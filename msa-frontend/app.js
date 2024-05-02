@@ -19,6 +19,10 @@ app.engine('handlebars', engine({
 }));
 app.set('view engine', 'handlebars');
 
+// request body 설정
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/', (req, res) => {
   res.render('index', {  // index.handlebars
     layout: false  // 레이아웃을 사용하지 않도록 설정
@@ -31,9 +35,22 @@ app.get('/apply', (req, res) => {
   });
 });
 
-app.get('/check', (req, res) => {
-  res.render('check/check', {  // apply.handlebars
+app.get('/apply/applyok', (req, res) => {
+  res.render('apply/applyok', {  // apply.handlebars
     layout: false  // 기본 레이아웃을 사용하지 않도록 설정
+  });
+});
+
+app.get('/check', (req, res) => {
+  res.render('check/check', {  // check.handlebars
+    layout: false  // 기본 레이아웃을 사용하지 않도록 설정
+  });
+});
+
+app.post('/check/checkok', (req, res) => {
+  res.render('check/checkok', {  // checkok.handlebars
+    layout: false,  // 기본 레이아웃을 사용하지 않도록 설정
+    data: req.body // POST 요청의 본문에서 파싱된 데이터를 'data' 객체로 뷰에 전달
   });
 });
 
