@@ -36,7 +36,7 @@ app.get('/apply', (req, res) => {
 });
 
 app.get('/apply/applyok', (req, res) => {
-  res.render('apply/applyok', {  // apply.handlebars
+  res.render('apply/applyok', {  // applyok.handlebars
     layout: false  // 기본 레이아웃을 사용하지 않도록 설정
   });
 });
@@ -55,19 +55,19 @@ app.post('/check/checkok', (req, res) => {
 });
 
 app.get('/intro', (req, res) => {
-  res.render('intro/intro', {  // apply.handlebars
+  res.render('intro/intro', {  // intro.handlebars
     layout: false  // 기본 레이아웃을 사용하지 않도록 설정
   });
 });
 
 app.get('/svc', (req, res) => {
-  res.render('svc/svc', {  // apply.handlebars
+  res.render('svc/svc', {  // svc.handlebars
     layout: false  // 기본 레이아웃을 사용하지 않도록 설정
   });
 });
 
 app.get('/admin', (req, res) => {
-  res.render('admin/admin', {  // apply.handlebars
+  res.render('admin/admin', {  // admin.handlebars
     layout: false  // 기본 레이아웃을 사용하지 않도록 설정
   });
 });
