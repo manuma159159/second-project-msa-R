@@ -112,7 +112,7 @@
             <h2 style="margin-top: 15px">방문자 관리 페이지</h2>
             <form name="dataForm">
                 <table class="table-bordered container mt-4" >
-                    <tr>
+                     <tr>
                         <th>NO</th>
                         <th>접수시간</th>
                         <th>회사이름</th>
@@ -159,32 +159,7 @@
 {{!--                     {% endfor %} --}}
                 </table>
             </form>
-{{!--             <ul class="pagination justify-content-center mt-4"> --}}
-{{!--                 {% if cpg == 1 %} --}}
-{{!--                     <li class="page-item disabled"> --}}
-{{!--                         {% else %} --}}
-{{!--                     <li class="page-item"> --}}
-{{!--                 {% endif %} --}}
-{{!--                 <a class="page-link" href="#">back</a></li> --}}
-
-{{!--                 {% for idx in range(stpg, stpg + 10) %} --}}
-
-{{!--                     {% if idx <= allpage %} --}}
-{{!--                         {% if cpg == idx %} --}}
-{{!--                         <li class="page-item active"> --}}
-{{!--                             {% else %} --}}
-{{!--                         <li class="page-item"> --}}
-{{!--                         {% endif %} --}}
-{{!--                 <a class="page-link" href="{{ baseurl }}{{ idx }}">{{ idx }}</a></li> --}}
-{{!--                     {% endif %} --}}
-{{!--                 {% endfor %} --}}
-
-{{!--                 {% if cpg == allpage %} --}}
-{{!--                     <li class="page-item disabled"> --}}
-{{!--                         {% else %} --}}
-{{!--                     <li class="page-item"> --}}
-{{!--                 {% endif %} --}}
-{{!--                 <a class="page-link" href="{{ baseurl }}{{ cpg + 1 }}">next</a></li> --}}
+            <ul class="pagination justify-content-center mt-4">
             </ul>
         </div>
 
@@ -290,7 +265,7 @@
                 <button type="button" id="reject_btn" class="btn btn-danger">거절</button>
             </div>
         </div>
-        <div id="overlay"></div>
+        <div id="overlay" style="display: none;"></div>
         <div class="loader"></div>
     </main>
 
@@ -376,10 +351,30 @@ accept_btn.addEventListener('click', () => {
         body: JSON.stringify(jsondata),
         redirect: 'follow'
     })
-        .then((res) => {
-        if (res.redirected) location.href = res.url
+    .then((res) => {
+        if (res.ok){
+            return res.json(); // JSON 데이터를 파싱하여 반환
+        } else {
+            return res.json().then((errorData) => {
+                throw new Error(errorData.detail);
+            });
+        }
     })
-        .catch((err) => console.log(err));
+    .then((data) => {
+        const resUrl = data.res_url;
+        if (resUrl === '/admin/1'){
+            alert("승인 되었습니다.");
+            location.href = '/admin'
+        } else {
+            alert("승인 처리 중 에러가 발생했습니다.");
+            location.reload();
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+        alert(err.message); // 에러 메시지를 표시
+        location.reload();
+    });
 });
 </script>
 <script>
@@ -400,12 +395,182 @@ reject_btn.addEventListener('click', () => {
         body: JSON.stringify(jsondata),
         redirect: 'follow'
     })
-        .then((res) => {
-            if (res.redirected) location.href = res.url
-        })
-        .catch((err) => console.log(err));
+    .then((res) => {
+        if (res.ok){
+            return res.json(); // JSON 데이터를 파싱하여 반환
+        } else {
+            return res.json().then((errorData) => {
+                throw new Error(errorData.detail);
+            });
+        }
+    })
+    .then((data) => {
+        const resUrl = data.res_url;
+        if (resUrl === '/admin/1'){
+            alert("거절 되었습니다.");
+            location.href = '/admin'
+        } else {
+            alert("거절 처리 중 에러가 발생했습니다.");
+            location.reload();
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+        alert(err.message); // 에러 메시지를 표시
+        location.reload();
+    });
+
 
 })
+</script>
+<script>
+window.addEventListener('load', async () => {
+        try {
+            const result = await getPageResult();
+            if (result) {  // 결과가 성공적으로 반환되었을 경우에만 display 함수 호출
+                displayPageResult(result);
+            }
+        } catch (e) {
+            console.error(e);  // 콘솔에 오류 출력
+            alert(e.message);  // 오류 메시지로 설정된 알림 보여주기
+        }
+    })
+
+    async function getPageResult(cpg) {
+
+        try {
+            const res = await fetch(`http://127.0.0.1:8000/admin/${cpg || 1}`, {
+                method: 'GET', // HTTP 메소드를 GET으로 지정
+                headers: {
+                    'Accept': 'application/json' // 서버 응답을 JSON으로 받기를 기대
+                }
+            });
+
+            if (res.ok) {
+                return await res.json(); // 서버로부터 JSON 응답을 기다리고 파싱
+            } else {
+                throw new Error('데이터 조회 실패!!!'); // 오류 발생 시 예외 처리
+            }
+
+        } catch (error) {
+            console.error('Error:', error); // 콘솔에 오류 출력
+            throw new Error('네트워크 연결 오류로 인해 조회 실패'); // 네트워크 오류에 대한 새로운 오류 메시지를 설정하고 던지기
+        }
+    }
+
+    const displayPageResult = (result) => {
+        const tableBody = document.querySelector('.table-bordered tbody');
+        const tableHeader = `
+            <tr>
+                <th>NO</th>
+                <th>접수시간</th>
+                <th>회사이름</th>
+                <th>부서명</th>
+                <th>직급</th>
+                <th>이름</th>
+                <th>전화번호</th>
+                <th>담당자(보안등급)</th>
+                <th>방문목적</th>
+                <th>방문장소(보안등급)</th>
+                <th>방문날짜</th>
+                <th>접수상태</th>
+                <th>승인/거절</th>
+            </tr>
+        `;
+        tableBody.innerHTML = tableHeader; // 기존 내용 초기화
+
+        allpage = 0;
+        stpg = 0;
+        cpg = 0;
+
+        result.forEach((item) => {
+            const tr = document.createElement('tr');
+            allpage = item.allpage;
+            stpg = item.stpg;
+            cpg = item.cpg;
+
+            tr.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.regdate.replace('T', ' ')}</td>
+                <td>${item.company_name}</td>
+                <td>${item.department_name}</td>
+                <td>${item.job_position}</td>
+                <td>${item.name}</td>
+                <td>${item.phone_number}</td>
+                <td>${item.department_name_1} ${item.job_position_1} ${item.name_1} (${item.security_grade})</td>
+                <td>${item.purpose}</td>
+                <td>${item.location} (${item.security_grade_1})</td>
+                <td>${item.visit_date}</td>
+            `;
+
+            const tdStatus = document.createElement('td');
+            const tdAction = document.createElement('td');
+
+            if (item.status === 'N') {
+                tdStatus.textContent = `${item.status}(접수 중)`;
+
+                const approveBtn = document.createElement('button');
+                approveBtn.textContent = '승인';
+                approveBtn.type = 'button';
+                approveBtn.classList.add('btn', 'btn-primary', 'btn-sm');
+                approveBtn.onclick = () => openModal1(approveBtn);
+
+                const rejectBtn = document.createElement('button');
+                rejectBtn.textContent = '거절';
+                rejectBtn.type = 'button';
+                rejectBtn.classList.add('btn', 'btn-danger', 'btn-sm');
+                rejectBtn.onclick = () => openModal2(rejectBtn);
+
+                tdAction.appendChild(approveBtn);
+                tdAction.appendChild(rejectBtn);
+            } else if (item.status === 'Y') {
+                tdStatus.textContent = `${item.status}(승인)`;
+                tdAction.textContent = '승인완료';
+                tdAction.style.paddingTop = '5px';
+                tdAction.style.paddingBottom = '5px';
+            } else if (item.status === 'R') {
+                tdStatus.textContent = `${item.status}(거절)`;
+                tdAction.textContent = '거절완료';
+                tdAction.style.paddingTop = '5px';
+                tdAction.style.paddingBottom = '5px';
+            }
+
+            tr.appendChild(tdStatus);
+            tr.appendChild(tdAction);
+
+            tableBody.appendChild(tr);
+        });
+
+        const pagination = document.querySelector('.pagination');
+        pagination.innerHTML = ''; // 이전 페이지네이션 링크 삭제
+
+        const prevLink = document.createElement('li');
+        prevLink.classList.add('page-item');
+        if (cpg === 1) {
+            prevLink.classList.add('disabled');
+        }
+        prevLink.innerHTML = `<a class="page-link" href="#">이전</a>`;
+        pagination.appendChild(prevLink);
+
+        for (let idx = stpg; idx <= Math.min(stpg + 10, allpage); idx++) {
+            const pageLink = document.createElement('li');
+            pageLink.classList.add('page-item');
+            if (cpg === idx) {
+                pageLink.classList.add('active');
+            }
+            pageLink.innerHTML = `<a class="page-link" href="javascript:getPageResult(${idx})">${idx}</a>`;
+            pagination.appendChild(pageLink);
+        }
+
+        const nextLink = document.createElement('li');
+        nextLink.classList.add('page-item');
+        if (cpg === allpage) {
+            nextLink.classList.add('disabled');
+        }
+        nextLink.innerHTML = `<a class="page-link" href="javascript:getPageResult(${cpg + 1})">다음</a>`;
+        pagination.appendChild(nextLink);
+    };
+
 </script>
 
 {{> footer}}
