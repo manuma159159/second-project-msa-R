@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     dbname: str = os.getenv('dbname')
     dbhost: str = os.getenv('dbhost')
 
+
     db_conn: str = f'mysql+pymysql://{userid}:{passwd}@{dbhost}:3306/{dbname}'
     #db_conn = f'mysql+pymysql://{userid}:{passwd}'
     #db_conn = f'oracle+cx_oracle://'

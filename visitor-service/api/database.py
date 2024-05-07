@@ -6,6 +6,7 @@ from api.models import visitors
 
 db_url = 'sqlite:///visitor.db'
 
+
 engine = sqlalchemy.create_engine(db_url, echo=True)
 SessionLocal = sessionmaker(autocommit=False,
                             autoflush=False, bind=engine)

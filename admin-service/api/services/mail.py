@@ -4,7 +4,7 @@ import os
 
 from sqlalchemy import select
 
-from api.database import Session
+from api.database import SessionLocal
 from api.models.visitors import Visitors
 
 GMAIL_PASS = os.getenv("GMAIL_PASS")
@@ -14,7 +14,7 @@ class MailService:
     def find_data(number):
         visitor_name, visitor_email, time = '', '', ''
 
-        with Session() as sess:
+        with SessionLocal() as sess:
             stmt = select(Visitors.name, Visitors.email, Visitors.regdate).where(Visitors.id == number)
             result = sess.execute(stmt)
 

@@ -16,7 +16,9 @@ app = FastAPI()
 # CORS 설정
 origins = [
     "http://localhost:3000",  # 허용할 프론트엔드 도메인
-    "http://13.125.245.89:3000"
+    "http://3.34.47.148:3000"
+
+
 ]
 
 app.add_middleware(
@@ -35,5 +37,4 @@ app.include_router(intro_router, prefix='/intro')
 if __name__ == '__main__':
     sess.create_tables()
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-
 
