@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from api.models import visitors
 
 
-db_url = 'mysql+pymysql://clouds:clouds@13.125.245.89/clouds'
+db_url = 'sqlite:///admin.db'
 
 engine = sqlalchemy.create_engine(db_url, echo=True)
 SessionLocal = sessionmaker(autocommit=False,

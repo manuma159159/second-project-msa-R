@@ -4,7 +4,8 @@ from sqlalchemy.orm import sessionmaker
 
 from api.models import visitors
 
-db_url = 'mysql+pymysql://clouds:clouds@13.125.245.89/clouds'
+db_url = 'sqlite:///visitor.db'
+# db_url = 'mysql+pymysql://clouds:clouds@13.125.245.89/clouds'
 
 
 

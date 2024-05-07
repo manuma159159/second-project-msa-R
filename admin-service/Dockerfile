@@ -7,6 +7,6 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY ./api /app/api
 ENV PYTHONPATH=/app
-
+VOLUME /api/admin.db
 EXPOSE 8010
 CMD ["python", "api/main.py"]
