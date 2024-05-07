@@ -3,9 +3,9 @@ from sqlalchemy.orm import sessionmaker
 
 
 from api.models import visitors
+from api.settings import config
 
-
-db_url = 'sqlite:///admin.db'
+db_url = config.db_conn
 
 engine = sqlalchemy.create_engine(db_url, echo=True)
 SessionLocal = sessionmaker(autocommit=False,
