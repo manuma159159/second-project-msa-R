@@ -30,5 +30,4 @@ app.include_router(intro_router, prefix='/intro')
 
 if __name__ == '__main__':
     sess.create_tables()
-    # Uvicorn 실행 구성 변경: 문자열 대신 직접 app 인스턴스를 사용
-uvicorn.run("main:app", host="0.0.0.0", port=8010, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8010, reload=True)
