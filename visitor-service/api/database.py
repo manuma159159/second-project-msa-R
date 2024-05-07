@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 from api.models import visitors
 
-db_url = 'sqlite:///visitor.db'
+db_url = 'sqlite:///13.125.245.89'
 
 
 engine = sqlalchemy.create_engine(db_url, echo=True)
